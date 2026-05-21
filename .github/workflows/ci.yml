@@ -1,0 +1,72 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - "**"
+
+  pull_request:
+    branches:
+      - main
+
+jobs:
+
+  golang:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.25"
+
+      - name: Download dependencies
+        run: go mod download
+
+      - name: Build extractor
+        run: go build ./api-go/cmd/api
+
+      - name: Build uploader
+        run: go build ./api-go/cmd/uploader
+
+      - name: Run go vet
+        run: go vet ./...
+
+  docker:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build extractor image
+        run: docker build -f Dockerfile.api -t extractor .
+
+      - name: Build uploader image
+        run: docker build -f Dockerfile.uploader -t uploader .
+
+  terraform:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: infra
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform Init
+        run: terraform init
+
+      - name: Terraform Format Check
+        run: terraform fmt -check
+
+      - name: Terraform Validate
+        run: terraform validate

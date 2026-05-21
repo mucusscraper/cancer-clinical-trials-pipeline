@@ -1,0 +1,6 @@
+.git
+data
+infra
+*.tfstate
+*.tfstate.*
+README.md
