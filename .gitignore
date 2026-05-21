@@ -1,7 +1,6 @@
 .env
-
-# Terraform
-.terraform/
-*.tfstate
-*.tfstate.*
-terraform.tfvars
+data/raw
+infra/.terraform/
+infra/.terraform.lock.hcl
+infra/terraform.tfstate
+infra/terraform.tfstate.backup
