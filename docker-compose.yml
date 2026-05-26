@@ -16,3 +16,15 @@ services:
       - .env
     volumes:
       - ./data:/app/data
+
+  pyspark: 
+    build: 
+      context: . 
+      dockerfile: Dockerfile.pyspark 
+    ports:
+      - "8888:8888"
+      - "4040:4040"
+    volumes: 
+      - ./:/home/jovyan/work 
+    env_file: 
+      - .env

@@ -1,0 +1,12 @@
+FROM jupyter/pyspark-notebook:spark-3.5.0
+
+RUN pip install boto3 python-dotenv
+
+WORKDIR /home/jovyan/work
+
+CMD [ \
+  "spark-submit", \
+  "--packages", \
+  "org.apache.hadoop:hadoop-aws:3.3.4,com.amazonaws:aws-java-sdk-bundle:1.12.262", \
+  "scripts/silver.py" \
+]
