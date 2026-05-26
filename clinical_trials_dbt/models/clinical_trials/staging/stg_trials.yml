@@ -1,0 +1,9 @@
+version: 2
+
+models:
+  - name: stg_trials
+    columns:
+      - name: nct_id
+        tests:
+          - unique
+          - not_null

@@ -6,7 +6,7 @@
 
 import boto3
 import os
-from pyspark.sql.functions import col, to_date, substring, current_timestamp, explode, lit
+from pyspark.sql.functions import col, to_date, substring, current_timestamp, explode, lit, to_json
 from pyspark.sql import SparkSession
 
 
@@ -105,14 +105,14 @@ for disease in diseases:
     col("study.protocolSection.eligibilityModule.sex")
         .alias("sex"),
 
-    col("study.protocolSection.contactsLocationsModule.locations")
-        .alias("locations"),
+    to_json(col("study.protocolSection.contactsLocationsModule.locations"))
+    .alias("locations"),
 
-    col("study.protocolSection.outcomesModule.primaryOutcomes")
-        .alias("primary_outcomes"),
+    to_json(col("study.protocolSection.outcomesModule.primaryOutcomes"))
+    .alias("primary_outcomes"),
 
-    col("study.protocolSection.armsInterventionsModule.interventions")
-        .alias("interventions"),
+    to_json(col("study.protocolSection.armsInterventionsModule.interventions"))
+    .alias("interventions"),
 
     col("study.hasResults")
         .alias("has_results")
@@ -135,9 +135,9 @@ for disease in diseases:
     (
     flat_df
         .write
-        .mode("overwrite")
+        .mode("append")
         .partitionBy("disease")
-        .parquet(f"s3a://{bucket_name}/silver/trials/{disease}/")
+        .parquet(f"s3a://{bucket_name}/silver/trials/")
     )
 
 

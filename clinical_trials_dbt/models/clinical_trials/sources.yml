@@ -1,0 +1,9 @@
+version: 2
+
+sources:
+  - name: clinical_trials
+    database: awsdatacatalog
+    schema: clinical_trials
+
+    tables:
+      - name: silver_trials
