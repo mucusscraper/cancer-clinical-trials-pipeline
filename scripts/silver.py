@@ -140,5 +140,15 @@ for disease in diseases:
         .parquet(f"s3a://{bucket_name}/silver/trials/")
     )
 
+athena = boto3.client("athena")
+
+athena.start_query_execution(
+    QueryString="""
+    MSCK REPAIR TABLE clinical_trials.silver_trials
+    """,
+    ResultConfiguration={
+        "OutputLocation": f"s3://{bucket_name}/athena-results/"
+    }
+)
 
 

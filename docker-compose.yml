@@ -28,3 +28,12 @@ services:
       - ./:/home/jovyan/work 
     env_file: 
       - .env
+
+  dbt:
+    build:
+      context: .
+      dockerfile: Dockerfile.dbt
+    env_file:
+      - .env
+    volumes:
+      - ./data:/app/data

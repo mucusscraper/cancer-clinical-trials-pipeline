@@ -1,0 +1,15 @@
+FROM python:3.10-slim
+
+WORKDIR /app
+
+
+RUN pip install --no-cache-dir dbt-athena-community
+
+
+COPY ./clinical_trials_dbt/ .
+
+COPY ./dbt-entrypoint.sh .
+
+RUN chmod +x ./dbt-entrypoint.sh
+
+ENTRYPOINT ["./dbt-entrypoint.sh"]
