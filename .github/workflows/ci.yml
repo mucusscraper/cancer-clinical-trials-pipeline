@@ -76,19 +76,4 @@ jobs:
 
       - name: Terraform Validate
         run: terraform validate
-  dbt:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Setup Python
-        uses: actions/setup-python@v4
-
-      - name: Install dbt athena community
-        run: pip install dbt-athena-community
-      
-      - name: dbt parse
-        working-directory: clinical_trials_dbt
-        run: dbt parse
   

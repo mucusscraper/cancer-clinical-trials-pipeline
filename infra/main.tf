@@ -57,49 +57,49 @@ resource "aws_glue_catalog_table" "example" {
     }
 
     columns {
-      name    = "study_first_submit_date"
-      type    = "string"
+      name = "study_first_submit_date"
+      type = "string"
     }
 
     columns {
-      name    = "lead_sponsor_name"
-      type    = "string"
+      name = "lead_sponsor_name"
+      type = "string"
     }
     columns {
-      name    = "study_type"
-      type    = "string"
+      name = "study_type"
+      type = "string"
     }
     columns {
-      name    = "phases"
-      type    = "array<string>"
+      name = "phases"
+      type = "array<string>"
     }
     columns {
-      name    = "enrollment_count"
-      type    = "int"
+      name = "enrollment_count"
+      type = "int"
     }
     columns {
-      name    = "sex"
-      type    = "string"
+      name = "sex"
+      type = "string"
     }
     columns {
-      name    = "locations"
-      type    = "string"
+      name = "locations"
+      type = "string"
     }
     columns {
-      name    = "primary_outcomes"
-      type    = "string"
+      name = "primary_outcomes"
+      type = "string"
     }
     columns {
-      name    = "interventions"
-      type    = "string"
+      name = "interventions"
+      type = "string"
     }
     columns {
-      name    = "has_results"
-      type    = "boolean"
+      name = "has_results"
+      type = "boolean"
     }
     columns {
-      name    = "study_first_submit_year"
-      type    = "int"
+      name = "study_first_submit_year"
+      type = "int"
     }
   }
   partition_keys {
