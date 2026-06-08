@@ -1,9 +1,10 @@
 .env
 data/raw/*
 infra/.terraform/
-infra/terraform.tfstate
-infra/terraform.tfstate.backup
 clinical_trials_dbt/target/*
 clinical_trials_dbt/logs/*
 clinical_trials_dbt/dbt_packages/*
 *.pem
+infra/*.tfstate
+infra/*.tfstate.backup
+airflow/logs/

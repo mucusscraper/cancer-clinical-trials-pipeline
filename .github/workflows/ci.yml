@@ -42,7 +42,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Build extractor image
+      - name: Build the api-extractor image
         run: docker build -f Dockerfile.api -t extractor .
 
       - name: Build uploader image
@@ -53,6 +53,9 @@ jobs:
 
       - name: Build dbt image
         run: docker build -f Dockerfile.dbt -t dbt .
+
+      - name: Build Airflow image
+        run: docker build -f Dockerfile.airflow -t airflow .
 
   terraform:
     runs-on: ubuntu-latest
