@@ -7,7 +7,7 @@ services:
       - .env
     volumes:
       - ./data:/app/data
-  
+
   uploader:
     build:
       context: .
@@ -17,16 +17,16 @@ services:
     volumes:
       - ./data:/app/data
 
-  pyspark: 
-    build: 
-      context: . 
-      dockerfile: Dockerfile.pyspark 
+  pyspark:
+    build:
+      context: .
+      dockerfile: Dockerfile.pyspark
     ports:
       - "8888:8888"
       - "4040:4040"
-    volumes: 
-      - ./:/home/jovyan/work 
-    env_file: 
+    volumes:
+      - ./:/home/jovyan/work
+    env_file:
       - .env
 
   dbt:
@@ -37,7 +37,88 @@ services:
       - .env
     volumes:
       - ./data:/app/data
+
   metabase:
     image: metabase/metabase
     ports:
       - "3000:3000"
+    volumes:
+      - ./metabase-data:/metabase-data
+
+  airflow-postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: airflow
+      POSTGRES_PASSWORD: airflow
+      POSTGRES_DB: airflow
+    volumes:
+      - airflow-postgres-db:/var/lib/postgresql/data
+
+  airflow-init:
+    image: apache/airflow:2.10.5
+    depends_on:
+      - airflow-postgres
+    env_file:
+      - .env
+    environment:
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@airflow-postgres/airflow
+      AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+    command: >
+      bash -c "
+      airflow db migrate &&
+      airflow users create
+      --username airflow
+      --password airflow
+      --firstname admin
+      --lastname admin
+      --role Admin
+      --email admin@example.com
+      "
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./airflow/dags:/opt/airflow/dags
+
+  airflow-webserver:
+    image: apache/airflow:2.10.5
+    depends_on:
+      - airflow-postgres
+      - airflow-init
+    env_file:
+      - .env
+    environment:
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@airflow-postgres/airflow
+      AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+    command: webserver
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./airflow/dags:/opt/airflow/dags
+      - ./airflow/logs:/opt/airflow/logs
+      - ./airflow/plugins:/opt/airflow/plugins
+      - ./var/run/docker.sock:/var/run/docker.sock
+
+  airflow-scheduler:
+    image: apache/airflow:2.10.5
+    depends_on:
+      - airflow-postgres
+      - airflow-init
+    env_file:
+      - .env
+    environment:
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@airflow-postgres/airflow
+      AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+    command: scheduler
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./airflow/dags:/opt/airflow/dags
+      - ./airflow/logs:/opt/airflow/logs
+      - ./airflow/plugins:/opt/airflow/plugins
+
+volumes:
+  airflow-postgres-db:
+
+
+  

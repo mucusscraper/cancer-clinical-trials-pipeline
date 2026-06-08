@@ -1,16 +1,10 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[2]:
-
-
 import boto3
 import os
 from pyspark.sql.functions import col, to_date, substring, current_timestamp, explode, lit, to_json
 from pyspark.sql import SparkSession
-
-
-# In[3]:
 
 
 # Create a SparkSession
@@ -29,14 +23,7 @@ spark = (
 )
 
 
-# In[4]:
-
-
 bucket_name = os.environ.get("S3_BUCKET_NAME")
-
-
-# In[5]:
-
 
 s3 = boto3.client(
     "s3",
@@ -46,9 +33,6 @@ s3 = boto3.client(
 )
 
 
-# In[6]:
-
-
 response = s3.list_objects_v2(
     Bucket=bucket_name,
     Prefix="raw/",
@@ -56,16 +40,10 @@ response = s3.list_objects_v2(
 )
 
 
-# In[7]:
-
-
 diseases = [
     prefix["Prefix"].split("/")[1]
     for prefix in response["CommonPrefixes"]
 ]
-
-
-# In[8]:
 
 
 for disease in diseases:
@@ -135,12 +113,40 @@ for disease in diseases:
     (
     flat_df
         .write
-        .mode("append")
+        .mode("overwrite")
         .partitionBy("disease")
         .parquet(f"s3a://{bucket_name}/silver/trials/")
     )
 
-athena = boto3.client("athena")
+athena = boto3.client("athena", aws_access_key_id=os.getenv("AWS_ACCESS_KEY_ID"), aws_secret_access_key=os.getenv("AWS_SECRET_ACCESS_KEY"), region_name=os.getenv("AWS_REGION"))
+
+athena.start_query_execution(
+    QueryString=f"""
+    CREATE EXTERNAL TABLE IF NOT EXISTS clinical_trials.silver_trials (
+        nct_id string,
+        overall_status string,
+        study_first_submit_date string,
+        lead_sponsor_name string,
+        study_type string,
+        phases string,
+        enrollment_count bigint,
+        sex string,
+        locations string,
+        primary_outcomes string,
+        interventions string,
+        has_results boolean,
+        study_first_submit_year int
+    )
+    PARTITIONED BY (
+        disease string
+    )
+    STORED AS PARQUET
+    LOCATION 's3://{bucket_name}/silver/trials/'
+    """,
+    ResultConfiguration={
+        "OutputLocation": f"s3://{bucket_name}/athena-results/"
+    }
+)
 
 athena.start_query_execution(
     QueryString="""
