@@ -1,5 +1,7 @@
 .env
+*.pem
 data/raw/*
+<<<<<<< HEAD
 infra/.terraform/
 clinical_trials_dbt/target/*
 clinical_trials_dbt/logs/*
@@ -8,3 +10,19 @@ clinical_trials_dbt/dbt_packages/*
 infra/*.tfstate
 infra/*.tfstate.backup
 airflow/logs/
+=======
+airflow/logs/*
+airflow/plugins/__pycache__/
+clinical_trials_dbt/target/*
+clinical_trials_dbt/logs/*
+clinical_trials_dbt/dbt_packages/*
+infra/.terraform/*
+infra/terraform.tfstate
+infra/terraform.tfstate.backup
+infra/*.tfstate
+infra/*.tfstate.*
+.ipynb_checkpoints/
+Untitled.ipynb
+__pycache__/
+*.pyc
+metabase-data/*
