@@ -1,7 +1,5 @@
 FROM apache/airflow:2.10.5
 
-USER root
-
-RUN pip install apache-airflow-providers-docker
+RUN pip install --no-cache-dir apache-airflow-providers-docker
 
 USER airflow
