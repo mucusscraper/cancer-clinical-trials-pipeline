@@ -55,6 +55,9 @@ for disease in diseases:
         .option("multiline", "true")
         .json(disease_path)
     )
+    print(f"Processing disease: {disease}")
+    df.printSchema()
+    df.show(1, truncate=False)
     df = df.withColumn(
         "study",
         explode("studies")
