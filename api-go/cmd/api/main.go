@@ -12,7 +12,7 @@ import (
 
 const BASEURL = "https://clinicaltrials.gov/api/v2/studies"
 
-var cancerList = []string{"chagas disease", "trachoma"}
+var cancerList = []string{"lymphoma", "leukemia"}
 
 type studyResponseForToken struct {
 	NextPageToken string `json:"nextPageToken"`
