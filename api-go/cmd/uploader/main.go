@@ -10,31 +10,29 @@ import (
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
-	"github.com/joho/godotenv"
 )
 
 func main() {
 	cfg, err := config.LoadDefaultConfig(context.Background())
 	if err != nil {
-		return
+		panic(err)
 	}
 	client := s3.NewFromConfig(cfg)
-	err = godotenv.Load()
-	if err != nil {
-		return
-	}
 	bucketName := os.Getenv("S3_BUCKET_NAME")
 	rawDataDir := "./data/raw"
 	conditions, err := os.ReadDir(rawDataDir)
 	if err != nil {
-		return
+		panic(err)
 	}
 	var wg sync.WaitGroup
 	for _, condition := range conditions {
+		if !condition.IsDir() {
+			continue
+		}
 		conditionPath := fmt.Sprintf("%s/%s", rawDataDir, condition.Name())
 		filesToUploadByCondition, err := os.ReadDir(conditionPath)
 		if err != nil {
-			return
+			panic(err)
 		}
 		for _, fileToUpload := range filesToUploadByCondition {
 			fileToUploadPath := fmt.Sprintf("%s/%s", conditionPath, fileToUpload.Name())

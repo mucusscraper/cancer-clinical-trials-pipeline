@@ -8,6 +8,7 @@ default_args = {
     "retries" : 3,
     "retry_delay": timedelta(minutes=5)
 }
+PROJECT_DIR = os.getenv("PROJECT_DIR")
 
 with DAG(
     max_active_runs=1,
@@ -18,14 +19,14 @@ with DAG(
     default_args=default_args
 ) as dag:
     shared_mount = Mount(
-    source="/home/samsung/workspace/github.com/mucusscraper/cancer-clinical-trials-pipeline/data",
-    target="/app/data",
-    type="bind"
+        source=f"{PROJECT_DIR}/data",
+        target="/app/data",
+        type="bind"
     )
     project_mount = Mount(
-    source="/home/samsung/workspace/github.com/mucusscraper/cancer-clinical-trials-pipeline",
-    target="/home/jovyan/work",
-    type="bind"
+        source=PROJECT_DIR,
+        target="/home/jovyan/work",
+        type="bind"
     )
     extractor = DockerOperator(
         task_id="extractor",

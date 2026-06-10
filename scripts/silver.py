@@ -39,12 +39,42 @@ response = s3.list_objects_v2(
     Delimiter="/"
 )
 
+paginator = s3.get_paginator("list_objects_v2")
+
+objects_to_delete = []
+
+for page in paginator.paginate(
+    Bucket=bucket_name,
+    Prefix="silver/trials/"
+):
+    if "Contents" not in page:
+        continue
+
+    for obj in page["Contents"]:
+        objects_to_delete.append(
+            {"Key": obj["Key"]}
+        )
+
+for i in range(0, len(objects_to_delete), 1000):
+    batch = objects_to_delete[i:i + 1000]
+
+    s3.delete_objects(
+        Bucket=bucket_name,
+        Delete={
+            "Objects": batch
+        }
+    )
+
+print(
+    f"Deleted {len(objects_to_delete)} objects from silver/trials/"
+)
 
 diseases = [
     prefix["Prefix"].split("/")[1]
     for prefix in response["CommonPrefixes"]
 ]
-
+print(response)
+print("Diseases found:", diseases)
 
 for disease in diseases:
     disease_path = (
@@ -116,7 +146,7 @@ for disease in diseases:
     (
     flat_df
         .write
-        .mode("overwrite")
+        .mode("append")
         .partitionBy("disease")
         .parquet(f"s3a://{bucket_name}/silver/trials/")
     )
